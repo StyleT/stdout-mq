@@ -35,27 +35,27 @@
   },
   "homepage": "https://github.com/StyleT/stdout-mq#readme",
   "devDependencies": {
-    "@itavy/test-utilities": "^2.1.0",
-    "eslint": "^4.3.0",
+    "@itavy/test-utilities": "^6.0.2",
+    "eslint": "^4.19.1",
     "eslint-config-airbnb": "^15.1.0",
-    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-jsx-a11y": "^5.1.1",
-    "eslint-plugin-react": "^7.1.0",
+    "eslint-plugin-react": "^7.18.3",
     "eyes": "^0.1.8",
     "jaguarjs-jsdoc": "^1.1.0",
-    "jsdoc": "^3.5.3",
-    "jsdoc-to-markdown": "^3.0.0",
-    "pino": "^4.7.1",
+    "jsdoc": "^3.6.3",
+    "jsdoc-to-markdown": "^5.0.3",
+    "pino": "^4.17.6",
     "pre-commit": "^1.2.2"
   },
   "dependencies": {
-    "amqplib": "^0.5.1",
-    "fast-safe-stringify": "^1.2.0",
+    "amqplib": "^0.5.5",
+    "fast-safe-stringify": "^1.2.3",
     "nopt": "^4.0.1",
-    "pump": "^1.0.2",
-    "semver": "^5.4.1",
-    "split2": "^2.1.1",
-    "through2": "^2.0.3"
+    "pump": "^1.0.3",
+    "semver": "^5.7.1",
+    "split2": "^2.2.0",
+    "through2": "^2.0.5"
   },
   "bin": {
     "stdout-mq": "./pino-mq.js"
