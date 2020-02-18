@@ -1,16 +1,17 @@
-[![Build Status](https://travis-ci.org/itavy/pino-mq.svg?branch=master)](https://travis-ci.org/itavy/pino-mq)
-# pino-mq
+# stdout-mq
+[![Build Status](https://travis-ci.com/StyleT/stdout-mq.svg?branch=master)](https://travis-ci.com/StyleT/stdout-mq)
+
 Pino-mq will take all messages received on process.stdin and send them over a message bus using JSON serialization;
 
 ## Installation
 
 ```
-npm install -g pino-mq
+npm install -g stdout-mq
 ```
 
 ## Quick Example
 ```
-node app.js | pino-mq -u "amqp://guest:guest@localhost/" -q "pino-logs"
+node app.js | stdout-mq -u "amqp://guest:guest@localhost/" -q "pino-logs"
 ```
 
 
@@ -36,7 +37,7 @@ options; `queueMap` option is available only in configuration json file;
  "type": "RABBITMQ",
  "uri": "amqp://guest:guest@localhost/",
  "exchange": "",
- "queue": "pino-mq",
+ "queue": "stdout-mq",
  "queuePattern": null,
  "queueMap": null,
  "fields": []
@@ -52,23 +53,23 @@ options; `queueMap` option is available only in configuration json file;
     where `protocol`, `path` and `fragment` will be specific for each type of broker
 
 ## Queues configuration
-queue configuration has a priority in defining behaviour for pino-mq; if more than one is specified, configuration will take this precedence:
+queue configuration has a priority in defining behaviour for stdout-mq; if more than one is specified, configuration will take this precedence:
 
 1. `queue` all messages will be sent on this queue
 2. `queuePattern` all messages will be sent on queue based on their message level; corespondig queue will be `<queuePattern><messageLevel>`:
     * ex: 
         ```
-        queuePattern: 'pino-mq-
+        queuePattern: 'stdout-mq-
         ```
         message:
         ```
         {"pid":25793,"hostname":"localhost.localdomain","level":50,"time":1503252634289,"msg":"msg3","v":1}
         ```
-        will be routed to `pino-mq-50` queue;
+        will be routed to `stdout-mq-50` queue;
 3. `queueMap` option allows you to specify specific queues based on their message level:
     ```
     queueMap: {
-      default: 'pino-mq-default',
+      default: 'stdout-mq-default',
       '30': 'infoMessages',
       '40': 'warnMessages',
       '50': 'errorMessages', 
@@ -89,10 +90,5 @@ in case is needed to filter log messages fields you can use `fields` option:
 * from configuration json file:
     * `"fields":["time","level","msg"]`
 
-## TODO
-* [ ] add Redis transport
-* [ ] add NATS transport
-* [ ] add documentation on how to use this module as dependency
-
 ## LICENSE
-[MIT License](https://github.com/itavy/pino-mq/blob/master/LICENSE.md)
+[Apache-2.0 License](https://github.com/StyleT/stdout-mq/blob/master/LICENSE.txt)

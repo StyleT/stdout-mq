@@ -1,7 +1,7 @@
 {
-  "name": "pino-mq",
+  "name": "stdout-mq",
   "version": "1.0.1",
-  "description": "Pinno Transport over MQ",
+  "description": "A transport for sending logs from stdout/stderr over MQ brokers\n",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha",
@@ -20,7 +20,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://git@github.com/itavy/pino-mq.git"
+    "url": "git+https://github.com/StyleT/stdout-mq.git"
   },
   "keywords": [
     "pino",
@@ -29,12 +29,11 @@
     "fast",
     "rabbitmq"
   ],
-  "author": "Octavian Ionescu <itavyg@gmail.com> (https://github.com/itavy)",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/itavy/pino-mq/issues"
+    "url": "https://github.com/StyleT/stdout-mq/issues"
   },
-  "homepage": "https://github.com/itavy/pino-mq#readme",
+  "homepage": "https://github.com/StyleT/stdout-mq#readme",
   "devDependencies": {
     "@itavy/test-utilities": "^2.1.0",
     "eslint": "^4.3.0",
@@ -59,6 +58,6 @@
     "through2": "^2.0.3"
   },
   "bin": {
-    "pino-mq": "./pino-mq.js"
+    "stdout-mq": "./pino-mq.js"
   }
 }
