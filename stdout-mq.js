@@ -11,6 +11,13 @@ const pump = require('pump');
 const nopt = require('nopt');
 const through = require('through2');
 const pkgInfo = require('./package.json');
+const dotenv = require('dotenv');
+
+const result = dotenv.config();
+
+if (result.error) {
+  throw result.error;
+}
 
 const defaultOptions = {
   type:         'RABBITMQ',
@@ -34,6 +41,7 @@ const longOptions = {
   help:           Boolean,
   version:        Boolean,
   generateConfig: Boolean,
+  wrapWith:       String,
 };
 
 const shortOptions = {
@@ -47,6 +55,7 @@ const shortOptions = {
   h:  '--help',
   v:  '--version',
   g:  '--generateConfig',
+  ww: '--wrapWith',
 };
 
 const argv = nopt(longOptions, shortOptions, process.argv);
@@ -103,24 +112,58 @@ if (configOptions.config !== null) {
 }
 
 if (configOptions.uri === null) {
-  console.log('You must specify connection uri');
-  process.exit(1);
+  if (!(
+    process.env.CONNECTION_PROTOCOL &&
+    process.env.CONNECTION_LOGIN &&
+    process.env.CONNECTION_PASSWORD &&
+    process.env.CONNECTION_HOST
+  )) {
+    console.log('You must specify connection uri or connection variables in .env');
+    process.exit(1);
+  }
+}
+
+if (configOptions.wrapWith) {
+  if (!configOptions.wrapWith.match('%DATA%')) {
+    console.log('You must specify %DATA% at data wrapper where it should pass stdout data');
+    process.exit(1);
+  }
 }
 
 // eslint-disable-next-line import/no-dynamic-require
 const getMqTransport = require(path.join(__dirname, 'index')).getTransport;
 
+/**
+ * Get transport URI
+ * @param {String} uri It is URI from cli args
+ * @returns {String} Transport URI
+ */
+function getTransportURI(uri) {
+  if (uri) {
+    return uri;
+  }
+
+  const {
+    CONNECTION_PROTOCOL,
+    CONNECTION_LOGIN,
+    CONNECTION_PASSWORD,
+    CONNECTION_HOST,
+  } = process.env;
+
+  return `${CONNECTION_PROTOCOL}://${CONNECTION_LOGIN}:${encodeURIComponent(CONNECTION_PASSWORD)}@${CONNECTION_HOST}`;
+}
 
 const t = getMqTransport({
   type:            configOptions.type,
   transportParams: {
-    uri: configOptions.uri,
+    uri: getTransportURI(configOptions.uri),
   },
   exchange:     configOptions.exchange,
   queue:        configOptions.queue,
   queuePattern: configOptions.queuePattern,
   queueMap:     configOptions.queueMap,
   fields:       configOptions.fields,
+  wrapWith:     configOptions.wrapWith,
 });
 
 process.stdin.on('close', t.close.bind(t));
