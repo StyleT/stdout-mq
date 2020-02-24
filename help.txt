@@ -9,3 +9,4 @@
   -g  | --generateConfig    create pino-mq.json config file with default options
   -h  | --help              Display Help
   -v  | --version           display Version
+  -ww | --wrapWith          wrap a message with custom data
