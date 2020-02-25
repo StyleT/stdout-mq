@@ -43,6 +43,7 @@
     "eslint-plugin-jsx-a11y": "^5.1.1",
     "eslint-plugin-react": "^7.1.0",
     "eyes": "^0.1.8",
+    "istanbul": "^0.4.5",
     "jaguarjs-jsdoc": "^1.1.0",
     "jsdoc": "^3.5.3",
     "jsdoc-to-markdown": "^5.0.3",
