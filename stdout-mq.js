@@ -3,6 +3,8 @@
 
 'use strict';
 
+require('dotenv').config();
+
 const path = require('path');
 // const { PassThrough } = require('stream');
 const fs = require('fs');
@@ -11,13 +13,6 @@ const pump = require('pump');
 const nopt = require('nopt');
 const through = require('through2');
 const pkgInfo = require('./package.json');
-const dotenv = require('dotenv');
-
-const result = dotenv.config();
-
-if (result.error) {
-  throw result.error;
-}
 
 const defaultOptions = {
   type:         'RABBITMQ',
