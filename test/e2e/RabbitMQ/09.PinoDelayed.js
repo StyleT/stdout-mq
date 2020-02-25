@@ -36,7 +36,7 @@ tap.test('Pino delayed close', (t) => {
         path.join(__dirname, 'Fixtures', 'pinoDelayed.js'),
       ]);
       const pinomq = spawn('node', [
-        path.join(__dirname, '..', '..', '..', 'pino-mq.js'),
+        path.join(__dirname, '..', '..', '..', 'stdout-mq.js'),
         '-c',
         path.join(__dirname, 'Fixtures', 'pino-mq.json'),
       ]);
