@@ -10,6 +10,7 @@ describe('Export', () => {
     const expectedKeys = [
       { name: 'tryStringify', type: 'function' },
       { name: 'validateMqSettings', type: 'function' },
+      { name: 'isJSON', type: 'function' },
     ];
 
     expect(Object.keys(helpersLib).length).to.be.equal(expectedKeys.length);
