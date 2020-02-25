@@ -1,15 +1,15 @@
 'use strict';
 
-const testUtilities = require('@itavy/test-utilities');
+const sinon = require('sinon');
 const helpersLib = require('../../lib/Helpers');
 
-const expect = testUtilities.getExpect();
+const expect = require('chai').expect;
 
 describe('TryStringify', () => {
   let sandbox;
 
   beforeEach((done) => {
-    sandbox = testUtilities.getSinonSandbox();
+    sandbox = sinon.createSandbox();
     done();
   });
 

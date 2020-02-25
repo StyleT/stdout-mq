@@ -1,17 +1,22 @@
 'use strict';
 
-const testUtilities = require('@itavy/test-utilities');
+const sinon = require('sinon');
+const chaiAsPromised = require('chai-as-promised');
+const chai = require('chai').use(chaiAsPromised);
+
+chai.should();
+const expect = chai.expect;
+
 const { RabbitMQTransport } = require('../../lib/RabbitMQTransport');
 const fixtures = require('./Fixtures');
 
-const expect = testUtilities.getExpect();
 
 describe('Connect', () => {
   let sandbox;
   let testConnector;
 
   beforeEach((done) => {
-    sandbox = testUtilities.getSinonSandbox();
+    sandbox = sinon.createSandbox();
     testConnector = Reflect.construct(RabbitMQTransport, [fixtures.RabbitMqDeps]);
     done();
   });

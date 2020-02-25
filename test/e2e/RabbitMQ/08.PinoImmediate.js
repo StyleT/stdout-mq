@@ -1,6 +1,6 @@
 'use strict';
 
-const tap = require('@itavy/test-utilities').getTap();
+const tap = require('tap');
 const fixtures = require('./Fixtures');
 const spawn = require('child_process').spawn;
 const path = require('path');
