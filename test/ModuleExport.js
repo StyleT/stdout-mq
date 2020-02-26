@@ -30,9 +30,29 @@ describe('Module Export', () => {
     return done();
   });
 
-  it('Should instantiate with RabbitMQ transport', (done) => {
+  it('Should instantiate with RabbitMQ transport and return original message', (done) => {
+    const message = { hello: 'There is data' };
     const t = pinoMQModule.getTransport({ queue: 'test-queue', type: 'RABBITMQ' });
     expect(t.transport).to.be.instanceOf(RabbitMQTransport);
+    expect(t.transformMessage(message)).to.be.equal(message);
     return done();
+  });
+
+  describe('When "wrapWith" is provided', () => {
+    it('Should return a message as an Object while "wrapWith" has JSON format', () => {
+      const transport = pinoMQModule.getTransport({ queue: 'test-queue', type: 'RABBITMQ', wrapWith: '{"prop":"value", "data":"%DATA%"}' });
+
+      expect(transport.transport).to.be.instanceOf(RabbitMQTransport);
+      expect(transport.transformMessage('Hello! There is data')).to.be.eqls({ prop: 'value', data: 'Hello! There is data' });
+      expect(transport.transformMessage({ hello: 'There is data' })).to.be.eqls({ prop: 'value', data: '{\"hello\":\"There is data\"}' }); // eslint-disable-line
+    });
+
+    it('Should return a message as a String while "wrapWith" does not have JSON format', () => {
+      const transport = pinoMQModule.getTransport({ queue: 'test-queue', type: 'RABBITMQ', wrapWith: 'Data: {"prop":"value", "data":"%DATA%"}' });
+
+      expect(transport.transport).to.be.instanceOf(RabbitMQTransport);
+      expect(transport.transformMessage('Hello! There is data')).to.be.eqls('Data: {"prop":"value", "data":"Hello! There is data"}');
+      expect(transport.transformMessage({ hello: 'There is data' })).to.be.eqls('Data: {"prop":"value", "data":"{\\"hello\\":\\"There is data\\"}"}');
+    });
   });
 });
