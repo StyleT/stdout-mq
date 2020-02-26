@@ -17,8 +17,6 @@ const defaultOptions = {
   uri:          null,
   exchange:     '',
   queue:        null,
-  queuePattern: null,
-  queueMap:     null,
   fields:       null,
   config:       null,
 };
@@ -28,7 +26,6 @@ const longOptions = {
   uri:            String,
   exchange:       String,
   queue:          String,
-  queuePattern:   String,
   fields:         String,
   config:         String,
   help:           Boolean,
@@ -42,7 +39,6 @@ const shortOptions = {
   u:  '--uri',
   e:  '--exchange',
   q:  '--queue',
-  qp: '--queuePattern',
   f:  '--fields',
   c:  '--config',
   h:  '--help',
@@ -70,8 +66,6 @@ if (configOptions.generateConfig) {
     uri:          'amqp://guest:guest@localhost/',
     exchange:     '',
     queue:        'pino-mq',
-    queuePattern: null,
-    queueMap:     null,
     fields:       [],
   }, null, ' ');
   fs.writeFileSync('pino-mq.json', cfgSample);
@@ -153,8 +147,6 @@ const t = getMqTransport({
   },
   exchange:     configOptions.exchange,
   queue:        configOptions.queue,
-  queuePattern: configOptions.queuePattern,
-  queueMap:     configOptions.queueMap,
   fields:       configOptions.fields,
   wrapWith:     configOptions.wrapWith,
 });
@@ -165,7 +157,7 @@ process.on('SIGTERM', t.close.bind(t));
 
 pump(
   process.stdin,
-  split(JSON.parse),
+  split(),
   through.obj(t.write.bind(t), t.close.bind(t)), (err) => {
     if (err) {
       console.log(err);

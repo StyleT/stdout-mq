@@ -29,7 +29,7 @@ tap.test('Single Topic', (t) => {
     .then(({ conn, transport }) => {
       checkConn = conn;
       testTransport = transport;
-      testTransport.write(fixtures.testMessages.singleQueue, null, () => null);
+      testTransport.write(JSON.stringify(fixtures.testMessages.singleQueue), null, () => null);
     })
     .catch(err => t.bailout(err));
 });

@@ -11,7 +11,7 @@ npm install -g stdout-mq
 
 ## Quick Example
 ```
-node app.js | stdout-mq -u "amqp://guest:guest@localhost/" -q "pino-logs"
+node app.js 2>&1 | stdout-mq -u "amqp://guest:guest@localhost/" -q "pino-logs"
 ```
 
 
@@ -53,34 +53,13 @@ options; `queueMap` option is available only in configuration json file;
     ```
     where `protocol`, `path` and `fragment` will be specific for each type of broker
 
-## Configuration .env file
-by security reasons you may specify `MQ_PROTOCOL`, `MQ_LOGIN`, `MQ_PASSWORD`, `MQ_HOST` in .env, these variables are going to be used to create URI for connecting to MQ broker, in this way, you can avoid using `--uri` (`-u`) param in CLI
+## Configuration via environment variables
+You may specify `MQ_PROTOCOL`, `MQ_LOGIN`, `MQ_PASSWORD`, `MQ_HOST` as env variables, these variables are going to be used to create URI for connecting to MQ broker, in this way, you can avoid using `--uri` (`-u`) param in CLI
 
 ## Queues configuration
 queue configuration has a priority in defining behaviour for stdout-mq; if more than one is specified, configuration will take this precedence:
 
 1. `queue` all messages will be sent on this queue
-2. `queuePattern` all messages will be sent on queue based on their message level; corespondig queue will be `<queuePattern><messageLevel>`:
-    * ex: 
-        ```
-        queuePattern: 'stdout-mq-
-        ```
-        message:
-        ```
-        {"pid":25793,"hostname":"localhost.localdomain","level":50,"time":1503252634289,"msg":"msg3","v":1}
-        ```
-        will be routed to `stdout-mq-50` queue;
-3. `queueMap` option allows you to specify specific queues based on their message level:
-    ```
-    queueMap: {
-      default: 'stdout-mq-default',
-      '30': 'infoMessages',
-      '40': 'warnMessages',
-      '50': 'errorMessages', 
-    }
-    ```
-    all info messages will be sent on `infoMessages` queue, warn on `warnMessages` and errors on `errorMessages`;
-    * `default` option will match any other messages where their level will not match anything in the map; this key is mandatory;
 
 #### RabbitMQ specific options
 For RabbitMQ type there is an extra option: 
