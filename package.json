@@ -35,23 +35,18 @@
   },
   "homepage": "https://github.com/StyleT/stdout-mq#readme",
   "devDependencies": {
-    "chai": "^4.2.0",
-    "chai-as-promised": "^7.1.1",
+    "@itavy/test-utilities": "^2.1.0",
     "eslint": "^4.3.0",
     "eslint-config-airbnb": "^15.1.0",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-jsx-a11y": "^5.1.1",
     "eslint-plugin-react": "^7.1.0",
     "eyes": "^0.1.8",
-    "istanbul": "^0.4.5",
     "jaguarjs-jsdoc": "^1.1.0",
     "jsdoc": "^3.5.3",
-    "jsdoc-to-markdown": "^5.0.3",
-    "mocha": "^7.0.1",
+    "jsdoc-to-markdown": "^3.0.0",
     "pino": "^4.7.1",
-    "pre-commit": "^1.2.2",
-    "sinon": "^9.0.0",
-    "tap": "^14.10.6"
+    "pre-commit": "^1.2.2"
   },
   "dependencies": {
     "amqplib": "^0.5.5",

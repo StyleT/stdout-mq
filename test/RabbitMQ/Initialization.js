@@ -1,6 +1,6 @@
 'use strict';
 
-const expect = require('chai').expect;
+const expect = require('@itavy/test-utilities').getExpect();
 const { RabbitMQTransport } = require('../../lib/RabbitMQTransport');
 const fixtures = require('./Fixtures');
 

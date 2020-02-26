@@ -1,7 +1,0 @@
-{
-    "spec": "./test/index.js",
-    "ui": "bdd",
-    "timeout": 3000,
-    "exclude": "node_modules/**/*",
-    "bail": true
-}

@@ -1,17 +1,17 @@
 'use strict';
 
-const sinon = require('sinon');
+const testUtilities = require('@itavy/test-utilities');
 const { MQTransport } = require('../../lib/MQTransport');
 const fixtures = require('./Fixtures');
 
-const expect = require('chai').expect;
+const expect = testUtilities.getExpect();
 
 describe('Close', () => {
   let sandbox;
   let testTransport;
 
   beforeEach((done) => {
-    sandbox = sinon.createSandbox();
+    sandbox = testUtilities.getSinonSandbox();
     testTransport = Reflect.construct(MQTransport, [fixtures.mqtDeps.queue]);
     done();
   });
