@@ -168,4 +168,9 @@ process.on('SIGTERM', t.close.bind(t));
 pump(
   process.stdin,
   split(JSON.parse),
-  through.obj(t.write.bind(t), t.close.bind(t)));
+  through.obj(t.write.bind(t), t.close.bind(t)), (err) => {
+    if (err) {
+      console.log(err);
+      process.exit(34);
+    }
+  });
