@@ -16,11 +16,6 @@ const filterFields = [
 
 const mockExchange = 'mockExchange';
 const mockQueue = 'mockQueue';
-const mockQueuePattern = 'mockQueue.';
-const mockQueueMap = {
-  20:      'mockQueueMap20',
-  default: 'mockQueueMapDefault',
-};
 
 const messageTest = {
   pid:      process.pid,
@@ -37,18 +32,6 @@ const mqtDeps = {
     transport: mockTransport,
     exchange:  mockExchange,
     queue:     mockQueue,
-    fields:    mockFields,
-  },
-  queuePattern: {
-    transport:    mockTransport,
-    exchange:     mockExchange,
-    queuePattern: mockQueuePattern,
-    fields:       mockFields,
-  },
-  queueMap: {
-    transport: mockTransport,
-    exchange:  mockExchange,
-    queueMap:  mockQueueMap,
     fields:    mockFields,
   },
   queueFields: {
@@ -75,8 +58,6 @@ module.exports = {
   filterFields,
   mockExchange,
   mockQueue,
-  mockQueuePattern,
-  mockQueueMap,
   messageTest,
   transformedMessage,
   mqtDeps,

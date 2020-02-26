@@ -14,30 +14,9 @@ const testsConfig = {
     queue:  'pino-mq-queue',
     fields: ['level', 'msg', 'timestamp'],
   },
-  patternQueue: {
-    queuePattern: 'pino-mq-queue-',
-  },
-  mapQueue: {
-    queueMap: {
-      default: 'pinomqqueue-default',
-      30:      'pinomqqueue-30',
-      40:      'pinomqqueue-40',
-    },
-  },
   singleTopic: {
     exchange: 'pinoMQExchange',
     queue:    'pinoMQTopic',
-  },
-  patternTopic: {
-    queuePattern: 'pinoMQTopic.',
-    exchange:     'pinoMQExchange',
-  },
-  mapTopic: {
-    exchange: 'pinoMQExchange',
-    queueMap: {
-      default: 'pinoMQ.Topic.default',
-      30:      'pinoMQ.Topic.30',
-    },
   },
 };
 
@@ -48,29 +27,8 @@ const testsQueues = {
   filterFields: {
     queue: 'pino-mq-queue',
   },
-  patternQueue: {
-    queue30: `${testsConfig.patternQueue.queuePattern}30`,
-    queue35: `${testsConfig.patternQueue.queuePattern}35`,
-  },
-  mapQueue: {
-    default: testsConfig.mapQueue.queueMap.default,
-    30:      testsConfig.mapQueue.queueMap[30],
-    40:      testsConfig.mapQueue.queueMap[40],
-  },
   singleTopic: {
     queue: 'pino-mq-queue-topic',
-  },
-  patternTopic: {
-    queue30: 'pino-mq-patternqueue-topic-1',
-    topic30: `${testsConfig.patternTopic.queuePattern}30`,
-    queue35: 'pino-mq-patternqueue-topic-2',
-    topic35: `${testsConfig.patternTopic.queuePattern}35`,
-  },
-  mapTopic: {
-    default:      'pino-mq-mapqueue-topic-2',
-    topicDefault: testsConfig.mapTopic.queueMap.default,
-    30:           'pino-mq-mapqueue-topic-1',
-    topic30:      testsConfig.mapTopic.queueMap[30],
   },
 };
 
@@ -93,30 +51,6 @@ const testMessages = {
       level:     30,
       msg:       'Testing Message 30',
       timestamp: Date.now(),
-    },
-  },
-  patternQueue: {
-    msg30: {
-      level: 30,
-      msg:   'Testing Message 30',
-    },
-    msg35: {
-      level: 35,
-      msg:   'Testing Message 35',
-    },
-  },
-  mapQueue: {
-    msg30: {
-      level: 30,
-      msg:   'Testing Message 30',
-    },
-    msg40: {
-      level: 40,
-      msg:   'Testing Message 40',
-    },
-    msgDefault: {
-      level: 35,
-      msg:   'Testing Message 35',
     },
   },
 };

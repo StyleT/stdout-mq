@@ -7,7 +7,7 @@ const expect = testUtilities.getExpect();
 
 describe('ValidateMqSettings', () => {
   it('Should not validate', (done) => {
-    const msgError = 'You must provide at least queue or queuePatern or queueMap.';
+    const msgError = 'You must provide queue!';
     expect(() => helpersLib.validateMqSettings({})).to.throw(msgError);
 
     return done();
@@ -15,20 +15,6 @@ describe('ValidateMqSettings', () => {
 
   it('Should validate for queue only', (done) => {
     const tResp = helpersLib.validateMqSettings({ queue: 'testQueue' });
-    expect(tResp).to.be.equal(true);
-
-    return done();
-  });
-
-  it('Should validate for queuePattern only', (done) => {
-    const tResp = helpersLib.validateMqSettings({ queuePattern: 'testQueue.' });
-    expect(tResp).to.be.equal(true);
-
-    return done();
-  });
-
-  it('Should validate for queueMap only', (done) => {
-    const tResp = helpersLib.validateMqSettings({ queueMap: {} });
     expect(tResp).to.be.equal(true);
 
     return done();

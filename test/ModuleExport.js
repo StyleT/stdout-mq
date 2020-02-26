@@ -20,7 +20,7 @@ describe('Module Export', () => {
 
   it('Should fail for missing queue configs', (done) => {
     expect(() => pinoMQModule.getTransport({}))
-      .to.throw('You must provide at least queue or queuePatern or queueMap.');
+      .to.throw('You must provide queue!');
     return done();
   });
 
