@@ -27,6 +27,7 @@ node app.js | stdout-mq -u "amqp://guest:guest@localhost/" -q "pino-logs"
 - `--generateConfig` (`-g`): create pino-mq.json config file with default options
 - `--help` (`-h`): display help
 - `--version` (`-v`): display version
+- `--wrapWith` (`-ww`): wrap a message with custom data where %DATA% will be replaced with a message e.g. `{"data": "%DATA%", "customProp": "customData"}`
 
 ## Configuration JSON File
 by using `--generateConfig` it will create `pino-mq.json` file with all available configuration 
@@ -51,6 +52,9 @@ options; `queueMap` option is available only in configuration json file;
     <protocol>://[user[:password]@]host[:port][/path][?query]
     ```
     where `protocol`, `path` and `fragment` will be specific for each type of broker
+
+## Configuration .env file
+by security reasons you may specify `MQ_PROTOCOL`, `MQ_LOGIN`, `MQ_PASSWORD`, `MQ_HOST` in .env, these variables are going to be used to create URI for connecting to MQ broker, in this way, you can avoid using `--uri` (`-u`) param in CLI
 
 ## Queues configuration
 queue configuration has a priority in defining behaviour for stdout-mq; if more than one is specified, configuration will take this precedence:

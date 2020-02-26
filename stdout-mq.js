@@ -108,10 +108,10 @@ if (configOptions.config !== null) {
 
 if (configOptions.uri === null) {
   if (!(
-    process.env.CONNECTION_PROTOCOL &&
-    process.env.CONNECTION_LOGIN &&
-    process.env.CONNECTION_PASSWORD &&
-    process.env.CONNECTION_HOST
+    process.env.MQ_PROTOCOL &&
+    process.env.MQ_LOGIN &&
+    process.env.MQ_PASSWORD &&
+    process.env.MQ_HOST
   )) {
     console.log('You must specify connection uri or connection variables in .env');
     process.exit(1);
@@ -139,13 +139,13 @@ function getTransportURI(uri) {
   }
 
   const {
-    CONNECTION_PROTOCOL,
-    CONNECTION_LOGIN,
-    CONNECTION_PASSWORD,
-    CONNECTION_HOST,
+    MQ_PROTOCOL,
+    MQ_LOGIN,
+    MQ_PASSWORD,
+    MQ_HOST,
   } = process.env;
 
-  return `${CONNECTION_PROTOCOL}://${CONNECTION_LOGIN}:${encodeURIComponent(CONNECTION_PASSWORD)}@${CONNECTION_HOST}`;
+  return `${MQ_PROTOCOL}://${MQ_LOGIN}:${encodeURIComponent(MQ_PASSWORD)}@${MQ_HOST}`;
 }
 
 const t = getMqTransport({
