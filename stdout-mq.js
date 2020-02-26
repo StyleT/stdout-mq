@@ -13,12 +13,12 @@ const through = require('through2');
 const pkgInfo = require('./package.json');
 
 const defaultOptions = {
-  type:         'RABBITMQ',
-  uri:          null,
-  exchange:     '',
-  queue:        null,
-  fields:       null,
-  config:       null,
+  type:     'RABBITMQ',
+  uri:      null,
+  exchange: '',
+  queue:    null,
+  fields:   null,
+  config:   null,
 };
 
 const longOptions = {
@@ -62,11 +62,11 @@ if (configOptions.help) {
 
 if (configOptions.generateConfig) {
   const cfgSample = JSON.stringify({
-    type:         'RABBITMQ',
-    uri:          'amqp://guest:guest@localhost/',
-    exchange:     '',
-    queue:        'pino-mq',
-    fields:       [],
+    type:     'RABBITMQ',
+    uri:      'amqp://guest:guest@localhost/',
+    exchange: '',
+    queue:    'pino-mq',
+    fields:   [],
   }, null, ' ');
   fs.writeFileSync('pino-mq.json', cfgSample);
   console.log('Configuration is written in file "pino-mq.json"');
@@ -145,10 +145,10 @@ const t = getMqTransport({
   transportParams: {
     uri: getTransportURI(configOptions.uri),
   },
-  exchange:     configOptions.exchange,
-  queue:        configOptions.queue,
-  fields:       configOptions.fields,
-  wrapWith:     configOptions.wrapWith,
+  exchange: configOptions.exchange,
+  queue:    configOptions.queue,
+  fields:   configOptions.fields,
+  wrapWith: configOptions.wrapWith,
 });
 
 process.stdin.on('close', t.close.bind(t));
