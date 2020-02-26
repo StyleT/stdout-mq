@@ -3,8 +3,6 @@
 
 'use strict';
 
-require('dotenv').config();
-
 const path = require('path');
 // const { PassThrough } = require('stream');
 const fs = require('fs');
@@ -113,7 +111,7 @@ if (configOptions.uri === null) {
     process.env.MQ_PASSWORD &&
     process.env.MQ_HOST
   )) {
-    console.log('You must specify connection uri or connection variables in .env');
+    console.log('You must specify connection uri or environment connection variables');
     process.exit(1);
   }
 }
