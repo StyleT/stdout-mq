@@ -23,6 +23,7 @@ describe('Write', () => {
   });
 
   it('Should write entire message', (done) => {
+    const transformMessageSpy = sandbox.spy(testTransport, 'transformMessage');
     const transportWriteStub = sandbox.stub(testTransport.transport, 'write')
       .rejects(fixtures.testingError);
 
@@ -31,6 +32,9 @@ describe('Write', () => {
       expect(transportWriteStub.callCount).to.be.equal(1);
       expect(transportWriteStub.getCall(0).args[0])
         .to.have.property('message', fixtures.messageTest);
+      expect(transportWriteStub.getCall(0).args[0])
+        .to.have.property('exchange', fixtures.mqtDeps.queue.exchange);
+      expect(transformMessageSpy.calledOnce).to.be.equal(true);
 
       return done();
     });

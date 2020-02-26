@@ -9,6 +9,7 @@ describe('IsJSON', () => {
   });
 
   it('Should return false when a provided string does not have JSON format', () => {
-    expect(helpersLib.isJSON('  object: {"array": ["string", {"number": 10}]}   ')).to.be.equal(false);
+    expect(helpersLib.isJSON('                                             ')).to.be.equal(false);
+    expect(helpersLib.isJSON('object: {"array": ["string", {"number": 10}]}')).to.be.equal(false);
   });
 });
