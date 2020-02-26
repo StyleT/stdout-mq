@@ -20,7 +20,6 @@ node app.js 2>&1 | stdout-mq -u "amqp://guest:guest@localhost/" -q "pino-logs"
 - `--type` (`-t`): MQ type of transport to be used (default 'RABBITMQ')
 - `--uri` (`-u`): uri for connecting to MQ broker
 - `--queue` (`-q`): queue to be used for sending messages
-- `--queuePattern` (`-qp`): queuePattern  to be used for sending messages
 - `--fields` (`-f`): comma separated fields for filtering messages before sending
 - `--exchange` (`-e`): exchange name to be used in case of rabbitmq transport
 - `--config` (`-c`): path to config file (JSON); switches take precedence
@@ -31,7 +30,7 @@ node app.js 2>&1 | stdout-mq -u "amqp://guest:guest@localhost/" -q "pino-logs"
 
 ## Configuration JSON File
 by using `--generateConfig` it will create `pino-mq.json` file with all available configuration 
-options; `queueMap` option is available only in configuration json file;
+options;
 
 ```
 {
@@ -39,8 +38,6 @@ options; `queueMap` option is available only in configuration json file;
  "uri": "amqp://guest:guest@localhost/",
  "exchange": "",
  "queue": "stdout-mq",
- "queuePattern": null,
- "queueMap": null,
  "fields": []
 }
 ```

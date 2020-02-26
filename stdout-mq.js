@@ -11,6 +11,7 @@ const pump = require('pump');
 const nopt = require('nopt');
 const through = require('through2');
 const pkgInfo = require('./package.json');
+const { isJSON } = require('./lib/Helpers');
 
 const defaultOptions = {
   type:     'RABBITMQ',
@@ -112,7 +113,12 @@ if (configOptions.uri === null) {
 
 if (configOptions.wrapWith) {
   if (!configOptions.wrapWith.match('%DATA%')) {
-    console.log('You must specify %DATA% at data wrapper where it should pass stdout data');
+    console.log('You must specify %DATA% at "--wrapWith" where it should pass stdout data');
+    process.exit(1);
+  }
+
+  if (!isJSON(configOptions.wrapWith)) {
+    console.log('"--wrapWith" should have JSON format');
     process.exit(1);
   }
 }
