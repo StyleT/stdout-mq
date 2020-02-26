@@ -1,9 +1,8 @@
 'use strict';
 
-const testUtilities = require('@itavy/test-utilities');
 const helpersLib = require('../../lib/Helpers');
 
-const expect = testUtilities.getExpect();
+const expect = require('chai').expect;
 
 describe('ValidateMqSettings', () => {
   it('Should not validate', (done) => {

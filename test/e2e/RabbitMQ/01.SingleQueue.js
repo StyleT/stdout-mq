@@ -1,6 +1,6 @@
 'use strict';
 
-const tap = require('@itavy/test-utilities').getTap();
+const tap = require('tap');
 const fixtures = require('./Fixtures');
 
 tap.test('Single queue', (t) => {
