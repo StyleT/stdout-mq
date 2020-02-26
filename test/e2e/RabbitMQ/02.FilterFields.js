@@ -29,7 +29,8 @@ tap.test('Filter fields', (t) => {
     .then(({ conn, transport }) => {
       checkConn = conn;
       testTransport = transport;
-      testTransport.write(fixtures.testMessages.filterFields.orig, null, () => null);
+      testTransport.write(
+        JSON.stringify(fixtures.testMessages.filterFields.orig), null, () => null);
     })
     .catch(err => t.bailout(err));
 });

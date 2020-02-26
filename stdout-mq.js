@@ -11,16 +11,15 @@ const pump = require('pump');
 const nopt = require('nopt');
 const through = require('through2');
 const pkgInfo = require('./package.json');
+const { isJSON } = require('./lib/Helpers');
 
 const defaultOptions = {
-  type:         'RABBITMQ',
-  uri:          null,
-  exchange:     '',
-  queue:        null,
-  queuePattern: null,
-  queueMap:     null,
-  fields:       null,
-  config:       null,
+  type:     'RABBITMQ',
+  uri:      null,
+  exchange: '',
+  queue:    null,
+  fields:   null,
+  config:   null,
 };
 
 const longOptions = {
@@ -28,12 +27,12 @@ const longOptions = {
   uri:            String,
   exchange:       String,
   queue:          String,
-  queuePattern:   String,
   fields:         String,
   config:         String,
   help:           Boolean,
   version:        Boolean,
   generateConfig: Boolean,
+  wrapWith:       String,
 };
 
 const shortOptions = {
@@ -41,12 +40,12 @@ const shortOptions = {
   u:  '--uri',
   e:  '--exchange',
   q:  '--queue',
-  qp: '--queuePattern',
   f:  '--fields',
   c:  '--config',
   h:  '--help',
   v:  '--version',
   g:  '--generateConfig',
+  ww: '--wrapWith',
 };
 
 const argv = nopt(longOptions, shortOptions, process.argv);
@@ -64,13 +63,11 @@ if (configOptions.help) {
 
 if (configOptions.generateConfig) {
   const cfgSample = JSON.stringify({
-    type:         'RABBITMQ',
-    uri:          'amqp://guest:guest@localhost/',
-    exchange:     '',
-    queue:        'pino-mq',
-    queuePattern: null,
-    queueMap:     null,
-    fields:       [],
+    type:     'RABBITMQ',
+    uri:      'amqp://guest:guest@localhost/',
+    exchange: '',
+    queue:    'pino-mq',
+    fields:   [],
   }, null, ' ');
   fs.writeFileSync('pino-mq.json', cfgSample);
   console.log('Configuration is written in file "pino-mq.json"');
@@ -103,24 +100,61 @@ if (configOptions.config !== null) {
 }
 
 if (configOptions.uri === null) {
-  console.log('You must specify connection uri');
-  process.exit(1);
+  if (!(
+    process.env.MQ_PROTOCOL &&
+    process.env.MQ_LOGIN &&
+    process.env.MQ_PASSWORD &&
+    process.env.MQ_HOST
+  )) {
+    console.log('You must specify connection uri or environment connection variables');
+    process.exit(1);
+  }
+}
+
+if (configOptions.wrapWith) {
+  if (!configOptions.wrapWith.match('%DATA%')) {
+    console.log('You must specify %DATA% at "--wrapWith" where it should pass stdout data');
+    process.exit(1);
+  }
+
+  if (!isJSON(configOptions.wrapWith)) {
+    console.log('"--wrapWith" should have JSON format');
+    process.exit(1);
+  }
 }
 
 // eslint-disable-next-line import/no-dynamic-require
 const getMqTransport = require(path.join(__dirname, 'index')).getTransport;
 
+/**
+ * Get transport URI
+ * @param {String} uri It is URI from cli args
+ * @returns {String} Transport URI
+ */
+function getTransportURI(uri) {
+  if (uri) {
+    return uri;
+  }
+
+  const {
+    MQ_PROTOCOL,
+    MQ_LOGIN,
+    MQ_PASSWORD,
+    MQ_HOST,
+  } = process.env;
+
+  return `${MQ_PROTOCOL}://${MQ_LOGIN}:${encodeURIComponent(MQ_PASSWORD)}@${MQ_HOST}`;
+}
 
 const t = getMqTransport({
   type:            configOptions.type,
   transportParams: {
-    uri: configOptions.uri,
+    uri: getTransportURI(configOptions.uri),
   },
-  exchange:     configOptions.exchange,
-  queue:        configOptions.queue,
-  queuePattern: configOptions.queuePattern,
-  queueMap:     configOptions.queueMap,
-  fields:       configOptions.fields,
+  exchange: configOptions.exchange,
+  queue:    configOptions.queue,
+  fields:   configOptions.fields,
+  wrapWith: configOptions.wrapWith,
 });
 
 process.stdin.on('close', t.close.bind(t));
@@ -129,5 +163,10 @@ process.on('SIGTERM', t.close.bind(t));
 
 pump(
   process.stdin,
-  split(JSON.parse),
-  through.obj(t.write.bind(t), t.close.bind(t)));
+  split(),
+  through.obj(t.write.bind(t), t.close.bind(t)), (err) => {
+    if (err) {
+      console.log(err);
+      process.exit(34);
+    }
+  });

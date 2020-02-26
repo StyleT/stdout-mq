@@ -11,7 +11,7 @@
     "test:e2e:rabbitmq:coverage": "./node_modules/.bin/tap -b --cov --coverage-report=html -t 5 ./test/e2e/RabbitMQ/*.js",
     "coverage": "npm run test:check-style && ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha",
     "coverage:check": "./node_modules/.bin/istanbul check-coverage",
-    "test:check-style": "./node_modules/.bin/eslint index.js \"lib/*.js\" pino-mq.js \"test/**/*.js\"",
+    "test:check-style": "./node_modules/.bin/eslint index.js \"lib/*.js\" stdout-mq.js \"test/**/*.js\"",
     "docs": "./node_modules/.bin/jsdoc -c jsdoc.json",
     "pretest": "npm run test:check-style"
   },
@@ -58,6 +58,6 @@
     "through2": "^2.0.3"
   },
   "bin": {
-    "stdout-mq": "./pino-mq.js"
+    "stdout-mq": "./stdout-mq.js"
   }
 }

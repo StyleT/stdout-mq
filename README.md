@@ -11,7 +11,7 @@ npm install -g stdout-mq
 
 ## Quick Example
 ```
-node app.js | stdout-mq -u "amqp://guest:guest@localhost/" -q "pino-logs"
+node app.js 2>&1 | stdout-mq -u "amqp://guest:guest@localhost/" -q "pino-logs"
 ```
 
 
@@ -20,17 +20,17 @@ node app.js | stdout-mq -u "amqp://guest:guest@localhost/" -q "pino-logs"
 - `--type` (`-t`): MQ type of transport to be used (default 'RABBITMQ')
 - `--uri` (`-u`): uri for connecting to MQ broker
 - `--queue` (`-q`): queue to be used for sending messages
-- `--queuePattern` (`-qp`): queuePattern  to be used for sending messages
 - `--fields` (`-f`): comma separated fields for filtering messages before sending
 - `--exchange` (`-e`): exchange name to be used in case of rabbitmq transport
 - `--config` (`-c`): path to config file (JSON); switches take precedence
 - `--generateConfig` (`-g`): create pino-mq.json config file with default options
 - `--help` (`-h`): display help
 - `--version` (`-v`): display version
+- `--wrapWith` (`-ww`): wrap a message with custom data where %DATA% will be replaced with a message e.g. `{"data": "%DATA%", "customProp": "customData"}`
 
 ## Configuration JSON File
 by using `--generateConfig` it will create `pino-mq.json` file with all available configuration 
-options; `queueMap` option is available only in configuration json file;
+options;
 
 ```
 {
@@ -38,8 +38,6 @@ options; `queueMap` option is available only in configuration json file;
  "uri": "amqp://guest:guest@localhost/",
  "exchange": "",
  "queue": "stdout-mq",
- "queuePattern": null,
- "queueMap": null,
  "fields": []
 }
 ```
@@ -52,31 +50,13 @@ options; `queueMap` option is available only in configuration json file;
     ```
     where `protocol`, `path` and `fragment` will be specific for each type of broker
 
+## Configuration via environment variables
+You may specify `MQ_PROTOCOL`, `MQ_LOGIN`, `MQ_PASSWORD`, `MQ_HOST` as env variables, these variables are going to be used to create URI for connecting to MQ broker, in this way, you can avoid using `--uri` (`-u`) param in CLI
+
 ## Queues configuration
 queue configuration has a priority in defining behaviour for stdout-mq; if more than one is specified, configuration will take this precedence:
 
 1. `queue` all messages will be sent on this queue
-2. `queuePattern` all messages will be sent on queue based on their message level; corespondig queue will be `<queuePattern><messageLevel>`:
-    * ex: 
-        ```
-        queuePattern: 'stdout-mq-
-        ```
-        message:
-        ```
-        {"pid":25793,"hostname":"localhost.localdomain","level":50,"time":1503252634289,"msg":"msg3","v":1}
-        ```
-        will be routed to `stdout-mq-50` queue;
-3. `queueMap` option allows you to specify specific queues based on their message level:
-    ```
-    queueMap: {
-      default: 'stdout-mq-default',
-      '30': 'infoMessages',
-      '40': 'warnMessages',
-      '50': 'errorMessages', 
-    }
-    ```
-    all info messages will be sent on `infoMessages` queue, warn on `warnMessages` and errors on `errorMessages`;
-    * `default` option will match any other messages where their level will not match anything in the map; this key is mandatory;
 
 #### RabbitMQ specific options
 For RabbitMQ type there is an extra option: 
