@@ -8,3 +8,5 @@ jsdoc.json
 README.hbs
 test/
 docker-compose.yml
+.nyc_output
+.idea
