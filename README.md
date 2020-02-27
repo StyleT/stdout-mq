@@ -10,10 +10,16 @@ npm install -g stdout-mq
 ```
 
 ## Quick Example
+
+Bash pipes:
 ```
 node app.js 2>&1 | stdout-mq -u "amqp://guest:guest@localhost/" -q "pino-logs"
 ```
 
+Via sub-process, optimized for use with Docker:
+```
+stdout-mq -u "amqp://guest:guest@localhost/" -q "pino-logs" --spawnProcess="node app.js"
+```
 
 ## Command line switches
 
@@ -27,6 +33,7 @@ node app.js 2>&1 | stdout-mq -u "amqp://guest:guest@localhost/" -q "pino-logs"
 - `--help` (`-h`): display help
 - `--version` (`-v`): display version
 - `--wrapWith` (`-ww`): wrap a message with custom data where %DATA% will be replaced with a message e.g. `{"data": "%DATA%", "customProp": "customData"}`
+- `--spawnProcess` (`-sp`): Spawns a sub-process using specified command & listens it's stdout/stderr
 
 ## Configuration JSON File
 by using `--generateConfig` it will create `pino-mq.json` file with all available configuration 
