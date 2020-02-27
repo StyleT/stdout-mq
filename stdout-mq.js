@@ -12,6 +12,8 @@ const nopt = require('nopt');
 const through = require('through2');
 const pkgInfo = require('./package.json');
 const { isJSON } = require('./lib/Helpers');
+const spawn = require('child_process').spawn;
+const merge2 = require('merge2');
 
 const defaultOptions = {
   type:     'RABBITMQ',
@@ -33,6 +35,7 @@ const longOptions = {
   version:        Boolean,
   generateConfig: Boolean,
   wrapWith:       String,
+  spawnProcess:   String,
 };
 
 const shortOptions = {
@@ -46,6 +49,7 @@ const shortOptions = {
   v:  '--version',
   g:  '--generateConfig',
   ww: '--wrapWith',
+  sp: '--spawnProcess',
 };
 
 const argv = nopt(longOptions, shortOptions, process.argv);
@@ -157,16 +161,70 @@ const t = getMqTransport({
   wrapWith: configOptions.wrapWith,
 });
 
-process.stdin.on('close', t.close.bind(t));
-process.on('SIGINT', t.close.bind(t));
-process.on('SIGTERM', t.close.bind(t));
+if (!configOptions.spawnProcess) {
+  process.on('SIGINT', t.close.bind(t));
+  process.on('SIGTERM', t.close.bind(t));
+  process.stdin.on('close', t.close.bind(t));
 
-pump(
-  process.stdin,
-  split(),
-  through.obj(t.write.bind(t), t.close.bind(t)), (err) => {
-    if (err) {
-      console.log(err);
-      process.exit(34);
-    }
+  pump(
+    process.stdin,
+    split(),
+    through.obj(t.write.bind(t), t.close.bind(t)), (err) => {
+      if (err) {
+        console.log(err);
+        process.exit(34);
+      }
+    });
+} else {
+  const cmd = configOptions.spawnProcess.split(' ', 1)[0];
+  const args = configOptions.spawnProcess.split(' ').slice(1);
+
+  console.log(`Trying to run child process with cmd "${cmd}" & args "${args}"`);
+
+  const child = spawn(cmd, args, {
+    stdio: [
+      'inherit', // StdIn.
+      'pipe', // StdOut.
+      'pipe', // StdErr.
+    ],
   });
+  console.log(`Running child process with PID "${child.pid}"`);
+
+  child.on('exit', (code, signal) => {
+    console.log(`Child process has finished execution. code=${code} signal=${signal}`);
+    t.close(() => process.exit(code));
+  });
+  child.on('error', (error) => {
+    console.log(`Child process error: ${error}`);
+    t.close(() => process.exit(35));
+  });
+
+  /**
+   * Forwards signals to child process
+   * @param {string|number} signal Linux signal ID
+   * @return {void}
+   */
+  const forwardSignal = (signal) => {
+    console.log(`Receive ${signal} signal.`);
+    if (!child.kill(signal)) {
+      console.log('Child process failed to stop.');
+      return;
+    }
+    console.log('Child process was succesfully stopped. Shutting down...');
+  };
+
+  process.on('SIGINT', forwardSignal);
+  process.on('SIGTERM', forwardSignal);
+
+  pump(
+    merge2([child.stdout, child.stderr]),
+    split(),
+    through.obj(t.write.bind(t), t.close.bind(t)), (err) => {
+      if (err) {
+        console.log(err);
+        forwardSignal('SIGKILL');
+        process.exit(34);
+      }
+    });
+}
+
