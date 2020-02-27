@@ -1,6 +1,6 @@
 {
   "name": "stdout-mq",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "A transport for sending logs from stdout/stderr over MQ brokers\n",
   "main": "index.js",
   "scripts": {
