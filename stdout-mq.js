@@ -161,6 +161,12 @@ const t = getMqTransport({
   wrapWith: configOptions.wrapWith,
 });
 
+const consoleLogger = through.obj(function transform(chunk, enc, cb) {
+  this.push(chunk);
+  console.log(chunk.toString(enc));
+  cb();
+});
+
 if (!configOptions.spawnProcess) {
   process.on('SIGINT', t.close.bind(t));
   process.on('SIGTERM', t.close.bind(t));
@@ -169,6 +175,7 @@ if (!configOptions.spawnProcess) {
   pump(
     process.stdin,
     split(),
+    consoleLogger,
     through.obj(t.write.bind(t), t.close.bind(t)), (err) => {
       if (err) {
         console.log(err);
@@ -219,6 +226,7 @@ if (!configOptions.spawnProcess) {
   pump(
     merge2([child.stdout, child.stderr]),
     split(),
+    consoleLogger,
     through.obj(t.write.bind(t), t.close.bind(t)), (err) => {
       if (err) {
         console.log(err);
