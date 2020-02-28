@@ -10,6 +10,7 @@ describe('Initializaton', () => {
     expect(t).to.have.property('mqURI', fixtures.RabbitMqDeps.uri);
     expect(t).to.have.property('stringify', fixtures.RabbitMqDeps.stringify);
     expect(t).to.have.property('amqpLib', fixtures.RabbitMqDeps.amqpLib);
+    expect(t).to.have.property('maxTriesToReconnect', fixtures.RabbitMqDeps.maxTriesToReconnect);
     expect(t).to.have.property('connection', null);
     expect(t).to.have.property('channel', null);
     expect(t).to.respondTo('write', 'No write method');

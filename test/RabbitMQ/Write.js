@@ -46,7 +46,7 @@ describe('Close', () => {
       });
   });
 
-  it('Should faill if connection returns false', () => {
+  it('Should fail if connection returns false', () => {
     sandbox.stub(fixtures.amqpChannelMock, 'publish').returns(false);
 
     return testConnector.write(fixtures.messageTest)
@@ -56,6 +56,58 @@ describe('Close', () => {
 
         return Promise.resolve();
       });
+  });
+
+  describe('When max tries to reconnect is specified more than 0 and connection is going to be lost', () => {
+    let stringifySpy;
+
+    beforeEach(() => {
+      testConnector = Reflect.construct(RabbitMQTransport,
+        [Object.assign({}, fixtures.RabbitMqDeps, { maxTriesToReconnect: 1 })]);
+      stringifySpy = sandbox.spy(testConnector, 'stringify');
+    });
+
+    it('Should try to reconnect', () => {
+      const publishStub = sandbox.stub(fixtures.amqpChannelMock, 'publish')
+        .onFirstCall().returns(false)
+        .onSecondCall().returns(true); // eslint-disable-line
+
+      return testConnector.write(fixtures.messageTest)
+        .should.not.be.rejected
+        .then(() => {
+          expect(publishStub.callCount).to.be.equal(2);
+          expect(publishStub.alwaysCalledWithExactly(
+            fixtures.messageTest.exchange,
+            fixtures.messageTest.queue,
+            fixtures.bStringifiedMockMessage)).to.be.equal(true);
+
+          expect(stringifySpy.callCount).to.be.equal(2);
+          expect(stringifySpy.alwaysCalledWithExactly(fixtures.messageTest.message))
+            .to.be.equal(true);
+
+          return Promise.resolve();
+        });
+    });
+
+    it('Should try to reconnect and fail when it tries to reconnect more than max tries', () => {
+      const publishStub = sandbox.stub(fixtures.amqpChannelMock, 'publish').returns(false);
+
+      return testConnector.write(fixtures.messageTest)
+        .should.be.rejected
+        .then(() => {
+          expect(publishStub.callCount).to.be.equal(2);
+          expect(publishStub.alwaysCalledWithExactly(
+            fixtures.messageTest.exchange,
+            fixtures.messageTest.queue,
+            fixtures.bStringifiedMockMessage)).to.be.equal(true);
+
+          expect(stringifySpy.callCount).to.be.equal(2);
+          expect(stringifySpy.alwaysCalledWithExactly(fixtures.messageTest.message))
+            .to.be.equal(true);
+
+          return Promise.resolve();
+        });
+    });
   });
 
   it('Should resolve', () => testConnector.write(fixtures.messageTest)

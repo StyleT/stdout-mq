@@ -22,10 +22,11 @@ const stringifiedMockMessage = 'stringifiedMockMessage';
 const bStringifiedMockMessage = Buffer.from(stringifiedMockMessage);
 
 const RabbitMqDeps = {
-  uri:               '',
-  stringify:         () => stringifiedMockMessage,
-  amqpLib:           amqpLibMock,
-  maxTryToReconnect: 0,
+  uri:                 '',
+  stringify:           () => stringifiedMockMessage,
+  amqpLib:             amqpLibMock,
+  maxTriesToReconnect: 0,
+  reconnectAfter:      () => 100,
 };
 
 const testingError = Error('testing error');
