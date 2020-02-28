@@ -5,11 +5,13 @@ const expect = require('@itavy/test-utilities').getExpect();
 const amqpChannelMock = {
   publish:         () => true,
   waitForConfirms: () => Promise.resolve(),
+  on:              () => {},
 };
 
 const amqpConnectionMock = {
   createConfirmChannel: () => Promise.resolve(amqpChannelMock),
   close:                cb => cb(),
+  on:                   () => {},
 };
 
 const amqpLibMock = {
@@ -20,9 +22,10 @@ const stringifiedMockMessage = 'stringifiedMockMessage';
 const bStringifiedMockMessage = Buffer.from(stringifiedMockMessage);
 
 const RabbitMqDeps = {
-  uri:       '',
-  stringify: () => stringifiedMockMessage,
-  amqpLib:   amqpLibMock,
+  uri:               '',
+  stringify:         () => stringifiedMockMessage,
+  amqpLib:           amqpLibMock,
+  maxTryToReconnect: 0,
 };
 
 const testingError = Error('testing error');
