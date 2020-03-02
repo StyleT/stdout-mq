@@ -153,11 +153,11 @@ function getTransportURI(uri) {
 const t = getMqTransport({
   type:            configOptions.type,
   transportParams: {
-    uri: getTransportURI(configOptions.uri),
+    uri:      getTransportURI(configOptions.uri),
+    exchange: configOptions.exchange || '',
+    queue:    configOptions.queue || null,
   },
-  exchange: configOptions.exchange,
-  queue:    configOptions.queue,
-  fields:   configOptions.fields,
+  fields:   configOptions.fields || [],
   wrapWith: configOptions.wrapWith,
 });
 
