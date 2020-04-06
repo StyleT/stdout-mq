@@ -46,8 +46,8 @@ describe('Close', () => {
       });
   });
 
-  it('Should faill if connection returns false', () => {
-    sandbox.stub(fixtures.amqpChannelMock, 'publish').returns(false);
+  it('Should fail if publishing rejects', () => {
+    sandbox.stub(fixtures.amqpChannelMock, 'publish').rejects(new Error('Error sending message on MQ'));
 
     return testConnector.write(fixtures.messageTest)
       .should.be.rejected

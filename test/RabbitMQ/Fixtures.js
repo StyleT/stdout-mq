@@ -3,17 +3,18 @@
 const expect = require('@itavy/test-utilities').getExpect();
 
 const amqpChannelMock = {
-  publish:         () => true,
-  waitForConfirms: () => Promise.resolve(),
+  publish:     () => Promise.resolve(),
+  close:       () => Promise.resolve(),
+  queueLength: () => 0,
 };
 
 const amqpConnectionMock = {
-  createConfirmChannel: () => Promise.resolve(amqpChannelMock),
-  close:                cb => cb(),
+  createChannel: () => amqpChannelMock,
+  close:         () => Promise.resolve(),
 };
 
 const amqpLibMock = {
-  connect: () => Promise.resolve(amqpConnectionMock),
+  connect: () => amqpConnectionMock,
 };
 
 const stringifiedMockMessage = 'stringifiedMockMessage';
