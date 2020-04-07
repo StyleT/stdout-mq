@@ -197,18 +197,13 @@ if (!configOptions.spawnProcess) {
   });
   console.log(`Running child process with PID "${child.pid}"`);
 
-  /**
-   * A child process' exit listener
-   * @param {number|null} code An exit code
-   * @param {string} signal A signal name
-   * @returns {void}
-   */
-  const childOnExit = (code, signal) => {
+  child.on('exit', (code, signal) => {
     console.log(`Child process has finished execution. code=${code} signal=${signal}`);
-    t.close(() => process.exit(code));
-  };
 
-  child.on('exit', childOnExit);
+    if (!child.killed) {
+      t.close(() => process.exit(code));
+    }
+  });
   child.on('error', (error) => {
     console.log(`Child process error: ${error}`);
     t.close(() => process.exit(35));
@@ -237,6 +232,7 @@ if (!configOptions.spawnProcess) {
     consoleLogger,
     through.obj(t.write.bind(t), t.close.bind(t)), (err) => {
       if (err) {
+        console.log('Unhandled exception happened, terminating the process...');
         console.log(err);
         /**
          * Exit the main process
@@ -245,10 +241,7 @@ if (!configOptions.spawnProcess) {
         const processExit = () => process.exit(34);
         const processExitTimeout = setTimeout(processExit, 60 * 1000);
 
-        child.off('exit', childOnExit);
-        child.once('exit', (code, signal) => {
-          console.log(`Child process has finished execution. code=${code} signal=${signal}`);
-
+        child.once('exit', () => {
           clearTimeout(processExitTimeout);
           processExit();
         });
