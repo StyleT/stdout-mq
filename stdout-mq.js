@@ -197,35 +197,20 @@ if (!configOptions.spawnProcess) {
   });
   console.log(`Running child process with PID "${child.pid}"`);
 
-  let childProcessWasTerminated = false;
-
   /**
-   * Close the main process when a child process was terminated
-   * @param {Function} nextCheckAfter Returns when should check a child process
-   * @param {number} maxSeconds How many seconds it should wait for a terminated child process
-   * @param {number} seconds Initial seconds to wait for a terminated child process
+   * A child process' exit listener
+   * @param {number|null} code An exit code
+   * @param {string} signal A signal name
    * @returns {void}
    */
-  const closeMainProcess = function closeMainProcess(nextCheckAfter, maxSeconds, seconds) {
-    setTimeout(() => {
-      const shouldTerminateEvenIfChildProcessStillRunning = seconds >= maxSeconds;
-
-      if (childProcessWasTerminated || shouldTerminateEvenIfChildProcessStillRunning) {
-        process.exit(34);
-      } else {
-        closeMainProcess(nextCheckAfter, maxSeconds, nextCheckAfter(seconds));
-      }
-    }, seconds);
+  const childOnExit = (code, signal) => {
+    console.log(`Child process has finished execution. code=${code} signal=${signal}`);
+    t.close(() => process.exit(code));
   };
 
-  child.on('exit', (code, signal) => {
-    console.log(`Child process has finished execution. code=${code} signal=${signal}`);
-    childProcessWasTerminated = true;
-    t.close(() => process.exit(code));
-  });
+  child.on('exit', childOnExit);
   child.on('error', (error) => {
     console.log(`Child process error: ${error}`);
-    childProcessWasTerminated = true;
     t.close(() => process.exit(35));
   });
 
@@ -253,8 +238,22 @@ if (!configOptions.spawnProcess) {
     through.obj(t.write.bind(t), t.close.bind(t)), (err) => {
       if (err) {
         console.log(err);
+        /**
+         * Exit the main process
+         * @returns {void}
+         */
+        const processExit = () => process.exit(34);
+        const processExitTimeout = setTimeout(processExit, 60 * 1000);
+
+        child.off('exit', childOnExit);
+        child.once('exit', (code, signal) => {
+          console.log(`Child process has finished execution. code=${code} signal=${signal}`);
+
+          clearTimeout(processExitTimeout);
+          processExit();
+        });
+
         forwardSignal('SIGTERM');
-        closeMainProcess(seconds => seconds * 3, 60 * 1000, 1 * 1000);
       }
     });
 }
