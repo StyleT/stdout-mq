@@ -234,19 +234,15 @@ if (!configOptions.spawnProcess) {
       if (err) {
         console.log('Unhandled exception happened, terminating the process...');
         console.log(err);
-        /**
-         * Exit the main process
-         * @returns {void}
-         */
-        const processExit = () => {
+
+        const processExitTimeout = setTimeout(() => {
           forwardSignal('SIGKILL');
           process.exit(34);
-        };
-        const processExitTimeout = setTimeout(processExit, 60 * 1000);
+        }, 60 * 1000);
 
         child.once('exit', () => {
           clearTimeout(processExitTimeout);
-          processExit();
+          process.exit(34);
         });
 
         forwardSignal('SIGTERM');
