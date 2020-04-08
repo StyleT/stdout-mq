@@ -238,7 +238,10 @@ if (!configOptions.spawnProcess) {
          * Exit the main process
          * @returns {void}
          */
-        const processExit = () => process.exit(34);
+        const processExit = () => {
+          forwardSignal('SIGKILL');
+          process.exit(34);
+        };
         const processExitTimeout = setTimeout(processExit, 60 * 1000);
 
         child.once('exit', () => {
