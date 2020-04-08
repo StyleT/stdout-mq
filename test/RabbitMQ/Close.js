@@ -42,4 +42,48 @@ describe('Close', () => {
       return done();
     });
   });
+
+  it('Should close a channel and a connection after all queued messages are sent', (done) => {
+    const closeConnectionSpy = sandbox.spy(fixtures.amqpConnectionMock, 'close');
+    const closeChannelSpy = sandbox.spy(fixtures.amqpChannelMock, 'close');
+    const queueLengthStub = sandbox.stub(fixtures.amqpChannelMock, 'queueLength')
+      .withArgs()
+      .onFirstCall()
+      .returns(5)
+      .onSecondCall()
+      .returns(2)
+      .returns(0);
+
+    testConnector.connect()
+      .then(() => testConnector.close(() => {
+        expect(queueLengthStub.callCount).to.be.equal(3);
+        expect(closeConnectionSpy.callCount).to.be.equal(1);
+        expect(closeChannelSpy.callCount).to.be.equal(1);
+
+        expect(testConnector.closing).to.be.equal(true);
+        expect(testConnector.channel).to.be.equal(null);
+        expect(testConnector.connection).to.be.equal(null);
+      }))
+      .then(done)
+      .catch(done);
+  });
+
+  it('Should close a connection and a channel immediatly if all queued messages are sent before', (done) => {
+    const closeConnectionSpy = sandbox.spy(fixtures.amqpConnectionMock, 'close');
+    const closeChannelSpy = sandbox.spy(fixtures.amqpChannelMock, 'close');
+    const queueLengthStub = sandbox.spy(fixtures.amqpChannelMock, 'queueLength');
+
+    testConnector.connect()
+      .then(() => testConnector.close(() => {
+        expect(queueLengthStub.callCount).to.be.equal(1);
+        expect(closeConnectionSpy.callCount).to.be.equal(1);
+        expect(closeChannelSpy.callCount).to.be.equal(1);
+
+        expect(testConnector.closing).to.be.equal(true);
+        expect(testConnector.channel).to.be.equal(null);
+        expect(testConnector.connection).to.be.equal(null);
+      }))
+      .then(done)
+      .catch(done);
+  });
 });

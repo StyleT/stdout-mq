@@ -23,22 +23,22 @@ describe('Connect', () => {
   });
 
   it('Should call amqplib connect', () => {
-    const connectStub = sandbox.stub(fixtures.amqpLibMock, 'connect').rejects(fixtures.testingError);
+    const connectStub = sandbox.stub(fixtures.amqpLibMock, 'connect').throws(fixtures.testingError);
     return testConnector.connect()
       .should.be.rejected
       .then((error) => {
         fixtures.testExpectedError({ error });
 
         expect(connectStub.callCount).to.be.equal(1);
-        expect(connectStub.getCall(0).args).to.be.eql([fixtures.RabbitMqDeps.uri]);
+        expect(connectStub.getCall(0).args).to.be.eql([[fixtures.RabbitMqDeps.uri]]);
 
         return Promise.resolve();
       });
   });
 
   it('Should set connection', () => {
-    sandbox.stub(fixtures.amqpConnectionMock, 'createConfirmChannel')
-      .rejects(fixtures.testingError);
+    sandbox.stub(fixtures.amqpConnectionMock, 'createChannel')
+      .throws(fixtures.testingError);
     return testConnector.connect()
       .should.be.rejected
       .then((error) => {
