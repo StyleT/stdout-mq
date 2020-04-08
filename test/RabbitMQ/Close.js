@@ -86,4 +86,30 @@ describe('Close', () => {
       .then(done)
       .catch(done);
   });
+
+  it('Should close a connection and a channel once even if closing called multiple times', (done) => {
+    const callbackSpy = sandbox.spy();
+    const closeConnectionSpy = sandbox.spy(fixtures.amqpConnectionMock, 'close');
+    const closeChannelSpy = sandbox.spy(fixtures.amqpChannelMock, 'close');
+    const queueLengthStub = sandbox.spy(fixtures.amqpChannelMock, 'queueLength');
+
+    testConnector.connect()
+      .then(() => Promise.all([
+        testConnector.close(callbackSpy),
+        testConnector.close(callbackSpy),
+        testConnector.close(callbackSpy),
+      ]))
+      .then(() => {
+        expect(callbackSpy.callCount).to.be.equal(1);
+        expect(queueLengthStub.callCount).to.be.equal(1);
+        expect(closeConnectionSpy.callCount).to.be.equal(1);
+        expect(closeChannelSpy.callCount).to.be.equal(1);
+
+        expect(testConnector.closing).to.be.equal(true);
+        expect(testConnector.channel).to.be.equal(null);
+        expect(testConnector.connection).to.be.equal(null);
+      })
+      .then(done)
+      .catch(done);
+  });
 });
