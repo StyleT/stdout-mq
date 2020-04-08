@@ -199,7 +199,10 @@ if (!configOptions.spawnProcess) {
 
   child.on('exit', (code, signal) => {
     console.log(`Child process has finished execution. code=${code} signal=${signal}`);
-    t.close(() => process.exit(code));
+
+    if (!child.killed) {
+      t.close(() => process.exit(code));
+    }
   });
   child.on('error', (error) => {
     console.log(`Child process error: ${error}`);
@@ -229,9 +232,24 @@ if (!configOptions.spawnProcess) {
     consoleLogger,
     through.obj(t.write.bind(t), t.close.bind(t)), (err) => {
       if (err) {
+        console.log('Unhandled exception happened, terminating the process...');
         console.log(err);
-        forwardSignal('SIGKILL');
-        process.exit(34);
+        /**
+         * Exit the main process
+         * @returns {void}
+         */
+        const processExit = () => {
+          forwardSignal('SIGKILL');
+          process.exit(34);
+        };
+        const processExitTimeout = setTimeout(processExit, 60 * 1000);
+
+        child.once('exit', () => {
+          clearTimeout(processExitTimeout);
+          processExit();
+        });
+
+        forwardSignal('SIGTERM');
       }
     });
 }
