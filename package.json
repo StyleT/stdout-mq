@@ -57,7 +57,8 @@
     "pump": "^1.0.2",
     "semver": "^5.4.1",
     "split2": "^2.1.1",
-    "through2": "^2.0.3"
+    "through2": "^2.0.3",
+    "url-parse": "^1.4.7"
   },
   "bin": {
     "stdout-mq": "./stdout-mq.js"

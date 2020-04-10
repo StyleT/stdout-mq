@@ -167,10 +167,35 @@ const consoleLogger = through.obj(function transform(chunk, enc, cb) {
   cb();
 });
 
+let tDisconnectedTimeout = null;
+
+const tOnConnect = () => {
+  console.log('MQ transport is connected.');
+
+  if (tDisconnectedTimeout !== null) {
+    clearTimeout(tDisconnectedTimeout);
+    tDisconnectedTimeout = null;
+  }
+};
+
+const tOnDisconnectFactory = (shutDown, shutDownIn = 20*60*1000) => ({
+  error,
+}) => {
+  if (tDisconnectedTimeout === null) {
+    console.log('MQ transport is disconnected. It was caused by: ', error);
+    console.log(`Shutting down is going to be processed in ${shutDownIn} milliseconds.`);
+
+    tDisconnectedTimeout = setTimeout(shutDown, shutDownIn);
+  }
+}
+
 if (!configOptions.spawnProcess) {
   process.on('SIGINT', t.close.bind(t));
   process.on('SIGTERM', t.close.bind(t));
   process.stdin.on('close', t.close.bind(t));
+
+  t.on('disconnect', tOnDisconnectFactory(() => process.exit(34)));
+  t.on('connect', tOnConnect);
 
   pump(
     process.stdin,
@@ -200,9 +225,9 @@ if (!configOptions.spawnProcess) {
   child.on('exit', (code, signal) => {
     console.log(`Child process has finished execution. code=${code} signal=${signal}`);
 
-    if (!child.killed) {
-      t.close(() => process.exit(code));
-    }
+    // if (!child.killed) {
+    //   t.close(() => process.exit(code));
+    // }
   });
   child.on('error', (error) => {
     console.log(`Child process error: ${error}`);
@@ -226,6 +251,23 @@ if (!configOptions.spawnProcess) {
   process.on('SIGINT', forwardSignal);
   process.on('SIGTERM', forwardSignal);
 
+  const shutDownGracefullyIfItIsPossible = () => {
+    const processExitTimeout = setTimeout(() => {
+      forwardSignal('SIGKILL');
+      process.exit(34);
+    }, 60 * 1000);
+
+    child.once('exit', () => {
+      clearTimeout(processExitTimeout);
+      process.exit(34);
+    });
+
+    forwardSignal('SIGTERM');
+  }
+
+  t.on('disconnect', tOnDisconnectFactory(shutDownGracefullyIfItIsPossible, 2*1000));
+  t.on('connect', tOnConnect);
+
   pump(
     merge2([child.stdout, child.stderr]),
     split(),
@@ -235,17 +277,7 @@ if (!configOptions.spawnProcess) {
         console.log('Unhandled exception happened, terminating the process...');
         console.log(err);
 
-        const processExitTimeout = setTimeout(() => {
-          forwardSignal('SIGKILL');
-          process.exit(34);
-        }, 60 * 1000);
-
-        child.once('exit', () => {
-          clearTimeout(processExitTimeout);
-          process.exit(34);
-        });
-
-        forwardSignal('SIGTERM');
+        shutDownGracefullyIfItIsPossible();
       }
     });
 }
