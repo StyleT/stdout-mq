@@ -263,13 +263,14 @@ if (!configOptions.spawnProcess) {
    * @returns {void}
    */
   const shutDownGracefullyIfItIsPossible = () => {
+    console.log('Trying to shut down gracefully...');
+
     const processExitTimeout = setTimeout(() => {
       forwardSignal('SIGKILL');
       process.exit(34);
     }, 60 * 1000);
 
-    child.once('exit', (code, signal) => {
-      console.log(`Child process has finished execution gracefully. code=${code} signal=${signal}`);
+    child.once('exit', () => {
       clearTimeout(processExitTimeout);
       process.exit(34);
     });
