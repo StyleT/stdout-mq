@@ -30,7 +30,7 @@ describe('Connect', () => {
         fixtures.testExpectedError({ error });
 
         expect(connectStub.callCount).to.be.equal(1);
-        expect(connectStub.getCall(0).args).to.be.eql([[fixtures.RabbitMqDeps.uri]]);
+        expect(connectStub.getCall(0).args).to.be.eql([[fixtures.rabbitMqParsedUri]]);
 
         return Promise.resolve();
       });

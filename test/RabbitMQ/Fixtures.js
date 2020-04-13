@@ -11,6 +11,7 @@ const amqpChannelMock = {
 const amqpConnectionMock = {
   createChannel: () => amqpChannelMock,
   close:         () => Promise.resolve(),
+  on:            () => {},
 };
 
 const amqpLibMock = {
@@ -21,9 +22,18 @@ const stringifiedMockMessage = 'stringifiedMockMessage';
 const bStringifiedMockMessage = Buffer.from(stringifiedMockMessage);
 
 const RabbitMqDeps = {
-  uri:       '',
+  uri:       'amqp://pinomqusr:pino%2Fmq%3Fpwd@localhost:3000/pino-mq',
   stringify: () => stringifiedMockMessage,
   amqpLib:   amqpLibMock,
+};
+
+const rabbitMqParsedUri = {
+  protocol: 'amqp',
+  hostname: 'localhost',
+  port:     '3000',
+  username: 'pinomqusr',
+  password: 'pino/mq?pwd',
+  vhost:    'pino-mq',
 };
 
 const testingError = Error('testing error');
@@ -52,4 +62,5 @@ module.exports = {
   amqpChannelMock,
   bStringifiedMockMessage,
   messageTest,
+  rabbitMqParsedUri,
 };

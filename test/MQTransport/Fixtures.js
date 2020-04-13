@@ -5,6 +5,7 @@ const expect = require('@itavy/test-utilities').getExpect();
 const mockTransport = {
   write: () => Promise.resolve(),
   close: cb => cb(),
+  on:    () => {},
 };
 const mockFields = [];
 const filterFields = [
