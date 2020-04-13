@@ -169,6 +169,10 @@ const consoleLogger = through.obj(function transform(chunk, enc, cb) {
 
 let tDisconnectedTimeout = null;
 
+/**
+ * Handler of a transport connect event
+ * @returns {void}
+ */
 const tOnConnect = () => {
   console.log('MQ transport is connected.');
 
@@ -178,7 +182,13 @@ const tOnConnect = () => {
   }
 };
 
-const tOnDisconnectFactory = (shutDown, shutDownIn = 20*60*1000) => ({
+/**
+ * Create handler of a transport disconnect event
+ * @param {Function} shutDown what to do to shut down
+ * @param {number} shutDownIn shut down in milliseconds
+ * @returns {Function} Handler of a transport disconnect event
+ */
+const tOnDisconnectFactory = (shutDown, shutDownIn = 20 * 60 * 1000) => ({
   error,
 }) => {
   if (tDisconnectedTimeout === null) {
@@ -187,7 +197,7 @@ const tOnDisconnectFactory = (shutDown, shutDownIn = 20*60*1000) => ({
 
     tDisconnectedTimeout = setTimeout(shutDown, shutDownIn);
   }
-}
+};
 
 if (!configOptions.spawnProcess) {
   process.on('SIGINT', t.close.bind(t));
@@ -224,10 +234,6 @@ if (!configOptions.spawnProcess) {
 
   child.on('exit', (code, signal) => {
     console.log(`Child process has finished execution. code=${code} signal=${signal}`);
-
-    // if (!child.killed) {
-    //   t.close(() => process.exit(code));
-    // }
   });
   child.on('error', (error) => {
     console.log(`Child process error: ${error}`);
@@ -251,21 +257,27 @@ if (!configOptions.spawnProcess) {
   process.on('SIGINT', forwardSignal);
   process.on('SIGTERM', forwardSignal);
 
+  /**
+   * Shut down gracefully if it is possible
+   * or kill everything in a minute
+   * @returns {void}
+   */
   const shutDownGracefullyIfItIsPossible = () => {
     const processExitTimeout = setTimeout(() => {
       forwardSignal('SIGKILL');
       process.exit(34);
     }, 60 * 1000);
 
-    child.once('exit', () => {
+    child.once('exit', (code, signal) => {
+      console.log(`Child process has finished execution gracefully. code=${code} signal=${signal}`);
       clearTimeout(processExitTimeout);
       process.exit(34);
     });
 
     forwardSignal('SIGTERM');
-  }
+  };
 
-  t.on('disconnect', tOnDisconnectFactory(shutDownGracefullyIfItIsPossible, 2*1000));
+  t.on('disconnect', tOnDisconnectFactory(shutDownGracefullyIfItIsPossible));
   t.on('connect', tOnConnect);
 
   pump(
