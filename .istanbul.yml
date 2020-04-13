@@ -41,14 +41,14 @@ hooks:
     handle-sigint: false
 check:
     global:
-        statements: 95
-        lines: 95
-        branches: 95
-        functions: 95
+        statements: 50
+        lines: 50
+        branches: 50
+        functions: 50
         excludes: []
     each:
-        statements: 95
-        lines: 95
-        branches: 95
-        functions: 95
+        statements: 50
+        lines: 50
+        branches: 50
+        functions: 50
         excludes: []
