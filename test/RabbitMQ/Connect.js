@@ -50,6 +50,51 @@ describe('Connect', () => {
       });
   });
 
+  it('Should set connection `connect` and `disconnect` event handlers and emit events when connection is broken or restored', () => {
+    const connectEventData = {
+      connection: {},
+      url:        '',
+    };
+    const diconnectEventData = {
+      err: new Error(),
+    };
+    const connectionEventHandlers = {};
+
+    sandbox.stub(fixtures.amqpConnectionMock, 'on').callsFake((eventName, eventHandler) => {
+      connectionEventHandlers[eventName] = eventHandler;
+    });
+    sandbox.stub(fixtures.amqpConnectionMock, 'isConnected')
+      .withArgs()
+      .onFirstCall()
+      .returns(true)
+      .onSecondCall()
+      .returns(false);
+
+    const onTestConnectorDisconnectSpy = sandbox.spy();
+    const onTestConnectorConnectSpy = sandbox.spy();
+
+    testConnector.on('disconnect', onTestConnectorDisconnectSpy);
+    testConnector.on('connect', onTestConnectorConnectSpy);
+
+    return testConnector.connect().then(() => {
+      connectionEventHandlers.connect(connectEventData);
+      connectionEventHandlers.connect(connectEventData);
+      connectionEventHandlers.disconnect(diconnectEventData);
+    }).then(() => {
+      expect(onTestConnectorConnectSpy.getCall(0).args).to.be.eql([{
+        connection: connectEventData.connection,
+        url:        connectEventData.url,
+      }]);
+      expect(onTestConnectorConnectSpy.callCount).to.be.eql(1);
+      expect(onTestConnectorDisconnectSpy.getCall(0).args).to.be.eql([{
+        error: diconnectEventData.err,
+      }]);
+    }).finally(() => {
+      testConnector.off('connect', onTestConnectorConnectSpy);
+      testConnector.off('disconnect', onTestConnectorDisconnectSpy);
+    });
+  });
+
   it('Should set channel', () => testConnector.connect()
     .should.be.fulfilled
     .then(() => {
