@@ -12,6 +12,7 @@ const amqpConnectionMock = {
   createChannel: () => amqpChannelMock,
   close:         () => Promise.resolve(),
   on:            () => {},
+  isConnected:   () => true,
 };
 
 const amqpLibMock = {

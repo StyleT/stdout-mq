@@ -9,6 +9,7 @@ describe('ValidateMqSettings', () => {
   it('Should not validate', (done) => {
     const msgError = 'You must provide queue!';
     expect(() => helpersLib.validateMqSettings({})).to.throw(msgError);
+    expect(() => helpersLib.validateMqSettings({ queue: '' })).to.throw(msgError);
 
     return done();
   });
