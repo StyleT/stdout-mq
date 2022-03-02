@@ -58,7 +58,7 @@
     "semver": "^5.4.1",
     "split2": "^2.1.1",
     "through2": "^2.0.3",
-    "url-parse": "^1.4.7"
+    "url-parse": "^1.5.9"
   },
   "bin": {
     "stdout-mq": "./stdout-mq.js"
