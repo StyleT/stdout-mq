@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/StyleT/stdout-mq#readme",
   "devDependencies": {
-    "@itavy/test-utilities": "^2.1.0",
+    "@itavy/test-utilities": "^6.0.2",
     "eslint": "^4.3.0",
     "eslint-config-airbnb": "^15.1.0",
     "eslint-plugin-import": "^2.7.0",
